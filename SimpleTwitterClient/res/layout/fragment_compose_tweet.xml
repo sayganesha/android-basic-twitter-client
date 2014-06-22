@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <ImageView
+        android:id="@+id/ivComposeUserProfileImg"
+        android:layout_marginLeft="7dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="40dp"
+        android:src="@drawable/ic_launcher" />
+
+    <TextView
+        android:id="@+id/tvComposeUserName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/ivComposeUserProfileImg"
+        android:layout_marginLeft="14dp"
+        android:textStyle="bold" 
+        android:layout_toRightOf="@+id/ivComposeUserProfileImg"
+        android:text="@string/lableUserName" />
+
+    <TextView
+        android:id="@+id/tvComposeUserHandle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/ivComposeUserProfileImg"
+        android:layout_alignLeft="@+id/tvComposeUserName"
+        android:text="@string/txtUserHandle" />
+
+    <EditText
+        android:id="@+id/etComposeTweet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="18dp"
+        android:layout_below="@+id/ivComposeUserProfileImg"
+        android:layout_marginLeft="7dp"
+        android:ems="10"
+        android:hint="@string/hntComposeTweet"
+        android:inputType="textMultiLine" >
+
+        <requestFocus />
+    </EditText>
+
+    <Button
+        android:id="@+id/btSendTweet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:layout_marginRight="7dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:text="@string/btlblTweet"
+        android:textColor="#5cb3ff" />
+
+    <TextView
+        android:id="@+id/tvRemainingChars"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="@dimen/TweetBodySize"
+        android:layout_toLeftOf="@+id/btSendTweet"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="18dp"
+        android:text="@string/txtRemainingChars" />
+
+    <ImageButton
+        android:id="@+id/btCancelTweet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:background="#ffffff"
+        android:layout_marginLeft="7dp"
+		android:layout_marginTop="10dp"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/ic_action_delete_compose" />
+
+</RelativeLayout>
