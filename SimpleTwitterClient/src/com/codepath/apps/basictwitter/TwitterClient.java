@@ -24,13 +24,13 @@ import com.loopj.android.http.RequestParams;
 public class TwitterClient extends OAuthBaseClient {
 	public static final Class<? extends Api> REST_API_CLASS = TwitterApi.class; // Change this
 	public static final String REST_URL = "https://api.twitter.com/1.1"; // Change this, base API URL
-	public static final String REST_CONSUMER_KEY = "VsdDck2icx3GlIXCyxrBP1SeL";       // Change this
-	public static final String REST_CONSUMER_SECRET = "Zn6jQQY86jf7rJ62O5mIB9e9FY8RG6h7bvi7wFC5Lkrdg0CexY"; // Change this
+	public static final String REST_CONSUMER_KEY = "WwwrABK4vtMpQxlp3fG6zeFro";       // Change this
+	public static final String REST_CONSUMER_SECRET = "AZXhLqXK5FaMwPGlx2finUrMNMwwUAk2FIDFk0pTzD0nWUET05"; // Change this
 	public static final String REST_CALLBACK_URL = "oauth://gsbasictweets"; // Change this (here and in ma    nifest)
 
 	public TwitterClient(Context context) {
 		super(context, REST_API_CLASS, REST_URL, REST_CONSUMER_KEY, REST_CONSUMER_SECRET, REST_CALLBACK_URL);
-	}
+	}    
 
 	// CHANGE THIS
 	// DEFINE METHODS for different API endpoints here
@@ -52,13 +52,37 @@ public class TwitterClient extends OAuthBaseClient {
 	 *    i.e client.post(apiUrl, params, handler);
 	 */
 
-	public void getHomeTimeline(AsyncHttpResponseHandler handler) {
+	public void getHomeTimeline(long since_id, AsyncHttpResponseHandler handler) {
 		String apiUrl = getApiUrl("statuses/home_timeline.json");
 		RequestParams params = new RequestParams();
-		params.put("since_id", "1");
+		if (since_id == 1) {
+		params.put("since_id", "" + since_id);
+		} else {
+			params.put("max_id", "" + since_id);
+		}
 		client.get(apiUrl, params, handler);
 	}
 
 
-
+	public void getUserSetttings(AsyncHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("account/settings.json");
+		//
+		client.get(apiUrl, null, handler);
+	}
+	
+	public void getUserLookup(String screen_name, AsyncHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("users/lookup.json");
+		
+		RequestParams params = new RequestParams();
+		params.put("screen_name", screen_name);
+		client.get(apiUrl, params, handler);
+	}
+	
+	public void postStatusUpdate(String new_status, AsyncHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("statuses/update.json");
+		RequestParams params = new RequestParams();
+		params.put("status", new_status);
+		client.post(apiUrl, params, handler);
+	}
+	
 }
