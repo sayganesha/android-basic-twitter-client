@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -106,7 +107,7 @@ public class ComposeTweetDialog extends DialogFragment implements TextWatcher, O
 		tvComposeUserName.setText(user.getName());
 
 		tvComposeUserHandle = (TextView) view.findViewById(com.codepath.apps.basictwitter.R.id.tvComposeUserHandle);
-		tvComposeUserHandle.setText(user.getScreenName());
+		tvComposeUserHandle.setText("@" + user.getScreenName());
 
 		tvComposeRemainingChars = (TextView) view.findViewById(com.codepath.apps.basictwitter.R.id.tvRemainingChars);
 		tvComposeRemainingChars.setText("" + MAX_CHARS);
@@ -118,7 +119,8 @@ public class ComposeTweetDialog extends DialogFragment implements TextWatcher, O
 		etComposeTweet = (EditText) view.findViewById(com.codepath.apps.basictwitter.R.id.etComposeTweet);
 		etComposeTweet.requestFocus();
 		etComposeTweet.addTextChangedListener(this);
-
+		
+		getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
 		//getDialog().getWindow().setSoftInputMode(
 		//		WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);

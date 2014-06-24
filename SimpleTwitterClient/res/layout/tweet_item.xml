@@ -68,11 +68,10 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="5dp"
         android:layout_marginTop="5dp"
+        android:textSize="12sp"
         android:textColor="@android:color/darker_gray"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        
-        android:textSize="@dimen/TweetBodySize"
         android:text="@string/txtTweetedSince" />
 
 </RelativeLayout>

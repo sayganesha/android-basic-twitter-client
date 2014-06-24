@@ -1,12 +1,13 @@
 package com.codepath.apps.basictwitter.activities;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -46,7 +47,7 @@ public class TimelineActivity extends FragmentActivity  implements ComposeTweetD
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_timeline);
-   
+
 		client = TwitterClientApp.getTwitterClient();
 
 		lvTweets = (ListView)findViewById(R.id.lvTweets);       
@@ -54,24 +55,24 @@ public class TimelineActivity extends FragmentActivity  implements ComposeTweetD
 		adTweets = new  TweetArrayAdapter(this, tweets);
 		lvTweets.setAdapter(adTweets);       
 		// Attach the listener to the AdapterView onCreate
-        lvTweets.setOnScrollListener(new EndlessScrollListener() {
-	    @Override
-	    public void onLoadMore(int page, int totalItemsCount) {
-                // Triggered only when new data needs to be appended to the list
-                // Add whatever code is needed to append new items to your AdapterView
-	        if (page < MAX_PAGE) {
-	        	curr_page++;
-	        	populateTimeline();
-	        }
-                // or customLoadMoreDataFromApi(totalItemsCount); 
-	    } 
-        });
-		
-		
+		lvTweets.setOnScrollListener(new EndlessScrollListener() {
+			@Override
+			public void onLoadMore(int page, int totalItemsCount) {
+				// Triggered only when new data needs to be appended to the list
+				// Add whatever code is needed to append new items to your AdapterView
+				if (page < MAX_PAGE) {
+					curr_page++;
+					populateTimeline();
+				}
+				// or customLoadMoreDataFromApi(totalItemsCount); 
+			} 
+		});
+
+
 		getActionBar().setBackgroundDrawable(new 
-	               ColorDrawable(Color.parseColor("#5cb3ff")));  
+				ColorDrawable(Color.parseColor("#5cb3ff")));  
 		getActionBar().setTitle("Twitter");
-		
+
 		getUserName();
 		populateTimeline();
 	}    
@@ -84,17 +85,40 @@ public class TimelineActivity extends FragmentActivity  implements ComposeTweetD
 	}  
 
 	@Override
-    public void onFinishEditDialog(String newStatus) {
-       client.postStatusUpdate(newStatus, new JsonHttpResponseHandler() {
-    	   @Override
-    	public void onSuccess(int arg0, JSONArray arg1) {
-    		Toast.makeText(getApplicationContext(), "Successfully posted!", Toast.LENGTH_SHORT).show();
-    		
-    	} 
-       });
-       populateTimeline();
-    }
-	
+	public void onFinishEditDialog(String newStatus) {
+		JSONObject tweetObj = new JSONObject();
+		Tweet t = null;
+		try {
+			tweetObj.put("text", newStatus);
+			tweetObj.put("id", "12345");
+			
+			String date = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy").format(new Date());
+			tweetObj.put("created_at", date);
+			JSONObject userJson = new JSONObject();
+			userJson.put("name", user.getName());
+			userJson.put("id", user.getUid());
+			userJson.put("screen_name", user.getScreenName());
+			userJson.put("profile_image_url", user.getProfileImageUrl());
+			tweetObj.put("user", userJson);
+			t = Tweet.fromJSON(tweetObj);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		if (t != null) {
+			adTweets.insert(t, 0);  
+			adTweets.notifyDataSetChanged();
+			lvTweets.setSelection(0);
+		}
+		client.postStatusUpdate(newStatus, new JsonHttpResponseHandler() {
+			@Override
+			public void onSuccess(int arg0, JSONArray arg1) {
+				Toast.makeText(getApplicationContext(), "Successfully posted!", Toast.LENGTH_SHORT).show();
+
+			} 
+		});
+		populateTimeline();
+	}
+
 	public void onMenuItemClick(MenuItem mi) {
 		switch (mi.getItemId()) {
 		case R.id.miCompose :
@@ -112,16 +136,10 @@ public class TimelineActivity extends FragmentActivity  implements ComposeTweetD
 	} 
 
 	private void showComposeTweetDialog() {
-		Intent i = new Intent(getBaseContext(), FragmentComposeTweet.class);
-		i.putExtra("userName", "User");
-		i.putExtra("userHandle", "@userHandle");
-		i.putExtra("user", user);
 		FragmentManager fm = getSupportFragmentManager();
 		ComposeTweetDialog composeTweetDialog = ComposeTweetDialog.newInstance(user, "userName", "userHandle");
 		composeTweetDialog.setMenuVisibility(false);
-
 		composeTweetDialog.show(fm, "fragment_compose_tweet");
-		//startActivity(i);
 	}
 
 	private void getProfileInfo() {
