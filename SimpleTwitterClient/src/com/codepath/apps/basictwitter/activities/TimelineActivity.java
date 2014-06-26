@@ -16,7 +16,6 @@ import android.support.v4.app.FragmentManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.activeandroid.util.Log;
@@ -30,11 +29,14 @@ import com.codepath.apps.basictwitter.models.Tweet;
 import com.codepath.apps.basictwitter.models.User;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
+import eu.erikw.PullToRefreshListView;
+import eu.erikw.PullToRefreshListView.OnRefreshListener;
+
 public class TimelineActivity extends FragmentActivity  implements ComposeTweetDialogListener{
 	private TwitterClient client;
 	private ArrayList<Tweet> tweets;
 	private ArrayAdapter<Tweet> adTweets;
-	private ListView lvTweets;
+	private PullToRefreshListView lvTweets;
 
 	private String userScreenName;
 	private Long latest_tweet_id = 1L;
@@ -50,7 +52,7 @@ public class TimelineActivity extends FragmentActivity  implements ComposeTweetD
 
 		client = TwitterClientApp.getTwitterClient();
 
-		lvTweets = (ListView)findViewById(R.id.lvTweets);       
+		lvTweets = (PullToRefreshListView)findViewById(R.id.lvTweets);       
 		tweets = new ArrayList<Tweet>();
 		adTweets = new  TweetArrayAdapter(this, tweets);
 		lvTweets.setAdapter(adTweets);       
@@ -67,7 +69,18 @@ public class TimelineActivity extends FragmentActivity  implements ComposeTweetD
 				// or customLoadMoreDataFromApi(totalItemsCount); 
 			} 
 		});
-
+		// Set a listener to be invoked when the list should be refreshed.
+		lvTweets.setOnRefreshListener(new OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+				// Your code to refresh the list contents
+				// Make sure you call listView.onRefreshComplete()
+				// once the loading is done. This can be done from here or any
+				// place such as when the network request has completed successfully.
+				fetchTimelineAsync(0);
+			}
+		});
+  
 
 		getActionBar().setBackgroundDrawable(new 
 				ColorDrawable(Color.parseColor("#5cb3ff")));  
@@ -76,6 +89,21 @@ public class TimelineActivity extends FragmentActivity  implements ComposeTweetD
 		getUserName();
 		populateTimeline();
 	}    
+
+	public void fetchTimelineAsync(int page) {
+		populateTimeline();
+		/*client.getHomeTimeline(0, new JsonHttpResponseHandler() {
+			public void onSuccess(JSONArray json) {
+				// ...the data has come back, finish populating listview...
+				// Now we call onRefreshComplete to signify refresh has finished
+				lvTweets.onRefreshComplete();
+			}
+
+			public void onFailure(Throwable e) {
+				Log.d("DEBUG", "Fetch timeline error: " + e.toString());
+			}
+		});*/
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -91,7 +119,7 @@ public class TimelineActivity extends FragmentActivity  implements ComposeTweetD
 		try {
 			tweetObj.put("text", newStatus);
 			tweetObj.put("id", "12345");
-			
+
 			String date = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy").format(new Date());
 			tweetObj.put("created_at", date);
 			JSONObject userJson = new JSONObject();
@@ -126,14 +154,19 @@ public class TimelineActivity extends FragmentActivity  implements ComposeTweetD
 			break;
 		case R.id.miRefresh:
 			// start from the beginning
-			curr_page = 0;
-			latest_tweet_id = 1L;
-			populateTimeline();
+			refreshTimeline();
 			break;
 		default:
 			return;
 		}  
 	} 
+
+	private void refreshTimeline() 
+	{
+		curr_page = 0;
+		latest_tweet_id = 1L;
+		populateTimeline();
+	}
 
 	private void showComposeTweetDialog() {
 		FragmentManager fm = getSupportFragmentManager();
@@ -222,6 +255,8 @@ public class TimelineActivity extends FragmentActivity  implements ComposeTweetD
 				//adTweets.notifyDataSetChanged();
 				Log.d("debug", jsonArray.toString());
 				Log.d("debug", "---------------------------------------------");
+				lvTweets.onRefreshComplete();
+				lvTweets.setSelection(0);
 			}  
 
 			@Override
@@ -229,6 +264,8 @@ public class TimelineActivity extends FragmentActivity  implements ComposeTweetD
 				Log.d("debug", "Failure !!-----------------------------------");
 				Log.d("debug", e.toString());
 				Log.d("debug", s);
+				lvTweets.onRefreshComplete();
+				lvTweets.setSelection(0);
 			}  
 		});  
 	}
