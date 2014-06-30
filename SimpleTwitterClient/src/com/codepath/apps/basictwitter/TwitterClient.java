@@ -63,25 +63,59 @@ public class TwitterClient extends OAuthBaseClient {
 		client.get(apiUrl, params, handler);
 	}
 
+	public void getMentionsTimeline(long since_id, AsyncHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("statuses/mentions_timeline.json");
+		RequestParams params = new RequestParams();
+		if (since_id == 1) {
+		params.put("since_id", "" + since_id);
+		} else {
+			params.put("max_id", "" + since_id);
+		}
+		client.get(apiUrl, params, handler);
+	}
 
+	public void getMyInfo(AsyncHttpResponseHandler handler)
+	{
+		String apiUrl = getApiUrl("account/verify_credentials.json");
+		client.get(apiUrl, null, handler);
+	}
+	
+	public void getUserTimeline(String userId, long since_id, AsyncHttpResponseHandler handler)
+	{
+		String apiUrl = getApiUrl("statuses/user_timeline.json");
+		RequestParams params = new RequestParams();
+		if (userId.length() > 0 ) {
+			params.put("user_id", userId);
+		}
+		if (since_id == 1) {
+			params.put("since_id", "" + since_id);
+			} else {
+				params.put("max_id", "" + since_id);
+		}
+		client.get(apiUrl, params, handler);
+	}
+	
 	public void getUserSetttings(AsyncHttpResponseHandler handler) {
 		String apiUrl = getApiUrl("account/settings.json");
 		//
 		client.get(apiUrl, null, handler);
 	}
 	
-	public void getUserLookup(String screen_name, AsyncHttpResponseHandler handler) {
+	public void getUserLookup(String user_id, AsyncHttpResponseHandler handler) {
 		String apiUrl = getApiUrl("users/lookup.json");
 		
 		RequestParams params = new RequestParams();
-		params.put("screen_name", screen_name);
+		params.put("user_id", user_id);
 		client.get(apiUrl, params, handler);
 	}
 	
-	public void postStatusUpdate(String new_status, AsyncHttpResponseHandler handler) {
+	public void postStatusUpdate(String new_status, long tweet_id, AsyncHttpResponseHandler handler) {
 		String apiUrl = getApiUrl("statuses/update.json");
 		RequestParams params = new RequestParams();
 		params.put("status", new_status);
+		if (tweet_id > 0) {
+			params.put("in_reply_to_status_id", "" + tweet_id);
+		}
 		client.post(apiUrl, params, handler);
 	}
 	

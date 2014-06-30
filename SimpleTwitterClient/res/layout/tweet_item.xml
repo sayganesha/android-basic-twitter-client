@@ -1,36 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginBottom="3dp"
     android:layout_marginLeft="3dp"
     android:layout_marginTop="3dp"
-    android:layout_marginBottom="3dp"
-    
-     >
+    tools:ignore="UnusedAttribute,HardcodedText" >
 
     <ImageView
         android:id="@+id/ivProfileImage"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="8dp"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:contentDescription="ProfileImage"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:src="@drawable/ic_launcher" 
-        
-        />
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="8dp"
+        android:contentDescription="ProfileImage"
+        android:focusable="false"
+        android:src="@drawable/ic_launcher" />
 
     <TextView
         android:id="@+id/tvUserName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-   
-        android:layout_marginTop="5dp"
         android:layout_alignParentTop="true"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
         android:layout_toRightOf="@+id/ivProfileImage"
         android:text="@string/lableUserName"
-        android:layout_marginLeft="5dp"
         android:textStyle="bold" />
 
     <TextView
@@ -40,16 +38,15 @@
         android:layout_alignLeft="@+id/tvUserName"
         android:layout_below="@+id/tvUserName"
         android:layout_marginBottom="5dp"
-        android:autoLink="all"
-        android:linksClickable="true"
-        android:layout_marginTop="3dp"
         android:layout_marginRight="5dp"
+        android:layout_marginTop="3dp"
+        android:autoLink="all"
+        android:fontFamily="monotype"
+        android:linksClickable="true"
         android:text="@string/txtTweetBody"
         android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"
         android:textSize="@dimen/TweetBodySize"
-        android:fontFamily="monotype"
- android:textStyle="normal"
-         />
+        android:textStyle="normal" />
 
     <TextView
         android:id="@+id/tvUserHandle"
@@ -59,19 +56,28 @@
         android:layout_marginLeft="1dp"
         android:layout_marginTop="5dp"
         android:layout_toRightOf="@+id/tvUserName"
-        android:textColor="@android:color/darker_gray"
-        android:text="@string/txtUserHandle" />
+        android:text="@string/txtUserHandle"
+        android:textColor="@android:color/darker_gray" />
 
     <TextView
         android:id="@+id/tvTweetedSince"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="5dp"
-        android:layout_marginTop="5dp"
-        android:textSize="12sp"
-        android:textColor="@android:color/darker_gray"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:text="@string/txtTweetedSince" />
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
+        android:text="@string/txtTweetedSince"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="12sp" />
+
+    <ImageButton
+        android:id="@+id/btTweetReply"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/tvTweetedSince"
+        android:layout_below="@+id/tvTweetBody"
+        android:focusable="false"
+        android:src="@drawable/ic_action_refresh" />
 
 </RelativeLayout>

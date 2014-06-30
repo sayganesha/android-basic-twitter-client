@@ -3,21 +3,25 @@ package com.codepath.apps.basictwitter.adapters;
 import java.util.List;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.codepath.apps.basictwitter.R;
+import com.codepath.apps.basictwitter.activities.ProfileActivity;
 import com.codepath.apps.basictwitter.models.Tweet;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
+public class TweetArrayAdapter extends ArrayAdapter<Tweet> implements OnClickListener {
 
 	// get it once since every item needs it (saves just a function call btw)
 	ImageLoader imageLoader = ImageLoader.getInstance();
+	
 	
 	public TweetArrayAdapter(Context context, List<Tweet> tweets) {
 		super(context, 0, tweets);
@@ -42,6 +46,9 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
 		ImageView ivProfileImage = (ImageView) v.findViewById(R.id.ivProfileImage);
 		ivProfileImage.setImageResource(android.R.color.transparent);
 		imageLoader.displayImage(tweet.getUser().getProfileImageUrl(), ivProfileImage);
+		ivProfileImage.setTag("" + tweet.getUser().getUid());
+		ivProfileImage.setOnClickListener(this);
+		
 		
 		// handle the user name
 		TextView tvUserName = (TextView) v.findViewById(R.id.tvUserName);
@@ -59,5 +66,15 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
 		TextView tvTweetedSince = (TextView) v.findViewById(R.id.tvTweetedSince);
 		tvTweetedSince.setText(tweet.getRelativeTime());
 		return v;
+	}
+
+
+	@Override
+	public void onClick(View view) {
+		ImageView iv = (ImageView) view;
+		String user_id = (String) iv.getTag();
+		Intent i = new Intent(getContext(), ProfileActivity.class);
+		i.putExtra("user_id", user_id);
+	    getContext().startActivity(i);
 	}
 }

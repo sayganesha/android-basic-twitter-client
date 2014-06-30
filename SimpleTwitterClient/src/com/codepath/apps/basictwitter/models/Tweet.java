@@ -1,7 +1,7 @@
 package com.codepath.apps.basictwitter.models;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import org.json.JSONArray;
@@ -11,10 +11,25 @@ import org.json.JSONObject;
 import android.net.ParseException;
 import android.text.format.DateUtils;
 
-public class Tweet {
+import com.activeandroid.Model;
+import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Column.ForeignKeyAction;
+import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Select;
+
+@Table(name = "Tweet")
+public class Tweet  extends Model {
+	
+	@Column(name = "Body", unique = false)
 	private String body;
+	
+	@Column(name = "Uid", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
 	private long uid;
+	
+	@Column(name = "CreatedAt", unique = false)
 	private String createdAt;
+
+	@Column(name = "User", onUpdate = ForeignKeyAction.CASCADE, onDelete = ForeignKeyAction.CASCADE)
 	private User user;
 	
 	public String getRelativeTime() {
@@ -33,7 +48,7 @@ public class Tweet {
 	public String toString() {
 		return user.getScreenName() + " : " + body;
 	}
-
+  
 	public String getCreatedAt() {
 		return createdAt;  
 	}
@@ -59,6 +74,13 @@ public class Tweet {
 			e.printStackTrace();
 		}
 	 
+		relativeDate = relativeDate.replace(" ago", "").
+						replace("hours", "h").replace("hour", "h")
+						.replace("days", "d").replace("day", "e")
+						.replace("minutes", "m").replace("minute", "m")
+						.replace("weeks", "w").replace("week", "w")
+						.replace("seconds", "s").replace("second", "s")
+						.replace("years", "y").replace("year", "y").replace(" ", "");
 		return relativeDate;
 	}
 	
@@ -92,6 +114,8 @@ public class Tweet {
 			tweet.uid = jsonObject.getLong("id");
 			tweet.createdAt = jsonObject.getString("created_at");
 			tweet.user = User.fromJSON(jsonObject.getJSONObject("user"));
+			tweet.user.save();
+			tweet.save();
 		} catch (JSONException e) {
 			e.printStackTrace();
 			return null;
@@ -99,4 +123,9 @@ public class Tweet {
 		return tweet;
 	}
 
+	
+	 public static List<Tweet> getAll() {
+	        // This is how you execute a query
+	        return new Select().from(Tweet.class).execute();
+	  }
 }

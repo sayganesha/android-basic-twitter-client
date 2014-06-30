@@ -1,4 +1,4 @@
-package com.codepath.apps.basictwitter.activities;
+package com.codepath.apps.basictwitter.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -30,9 +30,11 @@ public class ComposeTweetDialog extends DialogFragment implements TextWatcher, O
 	private ImageButton btCancelTweet;
 	private Button btSendTweet;
 	private final int MAX_CHARS = 140;
+	
+	private long tweet_id = 0;
 
 	public interface ComposeTweetDialogListener {
-	    void onFinishEditDialog(String inputText);
+	    void onFinishEditDialog(String inputText, long tweet_id);
 	}
 	
 	
@@ -40,12 +42,17 @@ public class ComposeTweetDialog extends DialogFragment implements TextWatcher, O
 		// Empty constructor required for DialogFragment
 	}
 
-	public static ComposeTweetDialog newInstance(User user, String userName, String userHandle) {
+	public static ComposeTweetDialog newInstance(User user, String userName, 
+			String userHandle,
+			long tweet_id, String replytoScreenName) {
 		ComposeTweetDialog frag = new ComposeTweetDialog();
 		Bundle args = new Bundle();
 		args.putString("userName", userName);
 		args.putString("userHandle", userHandle);
 		args.putSerializable("user", user);
+		args.putLong("tweet_id", tweet_id);
+		args.putString("replyTo", replytoScreenName);
+		
 		frag.setArguments(args);
 		return frag;
 	}
@@ -90,7 +97,7 @@ public class ComposeTweetDialog extends DialogFragment implements TextWatcher, O
 			public void onClick(View w) {
 				// TODO Auto-generated method stub
 				ComposeTweetDialogListener activity = (ComposeTweetDialogListener) getActivity();
-				activity.onFinishEditDialog(etComposeTweet.getText().toString());
+				activity.onFinishEditDialog(etComposeTweet.getText().toString(), tweet_id);
 				dismiss();
 			}
 		});
@@ -116,7 +123,11 @@ public class ComposeTweetDialog extends DialogFragment implements TextWatcher, O
 		String title = getArguments().getString("title", "Enter Name");
 		getDialog().setTitle(title);*/
 
+		String replyToScreenName = getArguments().getString("replyTo");
 		etComposeTweet = (EditText) view.findViewById(com.codepath.apps.basictwitter.R.id.etComposeTweet);
+		if (replyToScreenName.length() > 0) {
+			etComposeTweet.setText("@" + replyToScreenName);
+		}
 		etComposeTweet.requestFocus();
 		etComposeTweet.addTextChangedListener(this);
 		

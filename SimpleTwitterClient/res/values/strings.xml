@@ -14,5 +14,6 @@
     <string name="btlblTweet">Tweet</string>
     <string name="txtRemainingChars">140</string>
     <string name="hntComposeTweet">What\'s happening?</string>
+    <string name="title_activity_profile">ProfileActivity</string>
 
 </resources>

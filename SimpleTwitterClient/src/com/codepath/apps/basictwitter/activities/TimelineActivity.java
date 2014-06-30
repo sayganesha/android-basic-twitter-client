@@ -1,119 +1,106 @@
 package com.codepath.apps.basictwitter.activities;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.widget.Toast;
 
 import com.activeandroid.util.Log;
 import com.codepath.apps.basictwitter.R;
 import com.codepath.apps.basictwitter.TwitterClient;
 import com.codepath.apps.basictwitter.TwitterClientApp;
-import com.codepath.apps.basictwitter.activities.ComposeTweetDialog.ComposeTweetDialogListener;
-import com.codepath.apps.basictwitter.adapters.EndlessScrollListener;
-import com.codepath.apps.basictwitter.adapters.TweetArrayAdapter;
+import com.codepath.apps.basictwitter.fragments.ComposeTweetDialog;
+import com.codepath.apps.basictwitter.fragments.ComposeTweetDialog.ComposeTweetDialogListener;
+import com.codepath.apps.basictwitter.fragments.HomeTimelineFragmnet;
+import com.codepath.apps.basictwitter.fragments.MentionsTimelineFragment;
+import com.codepath.apps.basictwitter.fragments.TweetsListFragment.OnTweetActivityListener;
+import com.codepath.apps.basictwitter.fragments.listeners.SupportFragmentTabListener;
 import com.codepath.apps.basictwitter.models.Tweet;
 import com.codepath.apps.basictwitter.models.User;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
-import eu.erikw.PullToRefreshListView;
-import eu.erikw.PullToRefreshListView.OnRefreshListener;
-
-public class TimelineActivity extends FragmentActivity  implements ComposeTweetDialogListener{
+public class TimelineActivity extends ActionBarActivity  implements ComposeTweetDialogListener, OnMenuItemClickListener, OnTweetActivityListener{
 	private TwitterClient client;
-	private ArrayList<Tweet> tweets;
-	private ArrayAdapter<Tweet> adTweets;
-	private PullToRefreshListView lvTweets;
-
-	private String userScreenName;
-	private Long latest_tweet_id = 1L;
+	private String user_id;
 	// The logged in user
 	private User user;
-	private int curr_page = 0;
-	private final int MAX_PAGE = 8;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_timeline);
 
+
 		client = TwitterClientApp.getTwitterClient();
 
-		lvTweets = (PullToRefreshListView)findViewById(R.id.lvTweets);       
-		tweets = new ArrayList<Tweet>();
-		adTweets = new  TweetArrayAdapter(this, tweets);
-		lvTweets.setAdapter(adTweets);       
-		// Attach the listener to the AdapterView onCreate
-		lvTweets.setOnScrollListener(new EndlessScrollListener() {
-			@Override
-			public void onLoadMore(int page, int totalItemsCount) {
-				// Triggered only when new data needs to be appended to the list
-				// Add whatever code is needed to append new items to your AdapterView
-				if (page < MAX_PAGE) {
-					curr_page++;
-					populateTimeline();
-				}
-				// or customLoadMoreDataFromApi(totalItemsCount); 
-			} 
-		});
-		// Set a listener to be invoked when the list should be refreshed.
-		lvTweets.setOnRefreshListener(new OnRefreshListener() {
-			@Override
-			public void onRefresh() {
-				// Your code to refresh the list contents
-				// Make sure you call listView.onRefreshComplete()
-				// once the loading is done. This can be done from here or any
-				// place such as when the network request has completed successfully.
-				fetchTimelineAsync(0);
-			}
-		});
-  
 
-		getActionBar().setBackgroundDrawable(new 
-				ColorDrawable(Color.parseColor("#5cb3ff")));  
-		getActionBar().setTitle("Twitter");
 
 		getUserName();
-		populateTimeline();
-	}    
+		setupTabs();
 
-	public void fetchTimelineAsync(int page) {
-		populateTimeline();
-		/*client.getHomeTimeline(0, new JsonHttpResponseHandler() {
-			public void onSuccess(JSONArray json) {
-				// ...the data has come back, finish populating listview...
-				// Now we call onRefreshComplete to signify refresh has finished
-				lvTweets.onRefreshComplete();
-			}
+		//populateTimeline();
+	}      
 
-			public void onFailure(Throwable e) {
-				Log.d("DEBUG", "Fetch timeline error: " + e.toString());
-			}
-		});*/
+	private void setupTabs() {
+		ActionBar actionBar = getSupportActionBar();
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		actionBar.setDisplayShowTitleEnabled(true);
+		actionBar.setBackgroundDrawable(new 
+				ColorDrawable(Color.parseColor("#5cb3ff")));  
+		actionBar.setTitle("Twitter");
+
+
+		android.support.v7.app.ActionBar.Tab tab1 = actionBar
+				.newTab()
+				.setText("Home")
+				.setIcon(R.drawable.ic_tab_home)
+				.setTag("HomeTimelineFragment")
+				.setTabListener(new SupportFragmentTabListener<HomeTimelineFragmnet>(R.id.flContainer, this,
+						"home", HomeTimelineFragmnet.class));
+
+		actionBar.addTab(tab1);
+		actionBar.selectTab(tab1);
+
+		android.support.v7.app.ActionBar.Tab tab2 = actionBar
+				.newTab()
+				.setText("Mentions")
+				.setIcon(R.drawable.ic_tab_mentions)
+				.setTag("MentionsTimelineFragment")
+				.setTabListener(new SupportFragmentTabListener<MentionsTimelineFragment>(R.id.flContainer, this,
+						"mentions", MentionsTimelineFragment.class));
+		actionBar.addTab(tab2);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.twitter_menu, menu);
+
+		MenuItem mi_compose = menu.findItem(R.id.miCompose);
+		mi_compose.setOnMenuItemClickListener(this);
+
+		MenuItem mi_profile = menu.findItem(R.id.miProfile);
+		mi_profile.setOnMenuItemClickListener(this);
 		return true;
-	}  
+	}   
 
 	@Override
-	public void onFinishEditDialog(String newStatus) {
+	public void onFinishEditDialog(String newStatus, long tweet_id) {
 		JSONObject tweetObj = new JSONObject();
 		Tweet t = null;
 		try {
@@ -127,95 +114,74 @@ public class TimelineActivity extends FragmentActivity  implements ComposeTweetD
 			userJson.put("id", user.getUid());
 			userJson.put("screen_name", user.getScreenName());
 			userJson.put("profile_image_url", user.getProfileImageUrl());
+			userJson.put("followers_count", user.getFollowersCount());
+			userJson.put("friends_count", user.getFollowingCount());
+			userJson.put("description", user.getTagLine());
 			tweetObj.put("user", userJson);
 			t = Tweet.fromJSON(tweetObj);
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		if (t != null) {
+
+		/*if (t != null) {
 			adTweets.insert(t, 0);  
 			adTweets.notifyDataSetChanged();
 			lvTweets.setSelection(0);
-		}
-		client.postStatusUpdate(newStatus, new JsonHttpResponseHandler() {
+		}*/
+		client.postStatusUpdate(newStatus, tweet_id,  new JsonHttpResponseHandler() {
 			@Override
 			public void onSuccess(int arg0, JSONArray arg1) {
 				Toast.makeText(getApplicationContext(), "Successfully posted!", Toast.LENGTH_SHORT).show();
 
 			} 
 		});
-		populateTimeline();
-	}
+		//populateTimeline();*/
+	}  
 
-	public void onMenuItemClick(MenuItem mi) {
+
+	public boolean onMenuItemClick(MenuItem mi) {
 		switch (mi.getItemId()) {
 		case R.id.miCompose :
-			showComposeTweetDialog();
+			showComposeTweetDialog(0, "");
 			break;
-		case R.id.miRefresh:
-			// start from the beginning
-			refreshTimeline();
+		case R.id.miProfile:
+			launchUserProfile();
 			break;
 		default:
-			return;
-		}  
+			break;
+		}   
+		return false;
 	} 
 
-	private void refreshTimeline() 
+
+	private void launchUserProfile() {
+		Intent i = new Intent(this, ProfileActivity.class);
+		i.putExtra("user_id", user_id);
+		startActivity(i);
+	}
+	
+	public void onProfileSelected(long tweet_uid, String userScreenName)
 	{
-		curr_page = 0;
-		latest_tweet_id = 1L;
-		populateTimeline();
+		showComposeTweetDialog(tweet_uid, userScreenName);
 	}
 
-	private void showComposeTweetDialog() {
+	private void showComposeTweetDialog(long tweet_uid, String userScreenName) {
 		FragmentManager fm = getSupportFragmentManager();
-		ComposeTweetDialog composeTweetDialog = ComposeTweetDialog.newInstance(user, "userName", "userHandle");
+		ComposeTweetDialog composeTweetDialog = ComposeTweetDialog.newInstance(user, "userName", "userHandle", tweet_uid, userScreenName);
 		composeTweetDialog.setMenuVisibility(false);
-		composeTweetDialog.show(fm, "fragment_compose_tweet");
-	}
-
-	private void getProfileInfo() {
-		client.getUserLookup(userScreenName, new JsonHttpResponseHandler() {
-
-			@Override
-			public void onSuccess(JSONArray jsonArray) {
-				try {
-					if (jsonArray.length() > 0) {
-						JSONObject jsonObject = jsonArray.getJSONObject(0);
-						user = User.fromJSON(jsonObject);
-					}
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				Log.d("debug", jsonArray.toString());
-				Log.d("debug", "---------------------------------------------");				
-			}  
-
-
-			@Override 
-			public void onFailure(Throwable e, String s) {
-				Log.d("debug", "Could not find out username !!-----------------------------------");
-				Log.d("debug", e.toString());
-				Log.d("debug", s);
-			}  
-		});
+		composeTweetDialog.show(fm, "fragment_compose_tweet");  
 	}
 
 	private void getUserName() {
-		client.getUserSetttings(new JsonHttpResponseHandler() {
+		client.getMyInfo(new JsonHttpResponseHandler() {
 			@Override
 			public void onSuccess(JSONObject jsonObject) {
-				try {
-					userScreenName = jsonObject.getString("screen_name");
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+
+				user = User.fromJSON(jsonObject);
+				if (user != null) {
+					user_id = "" + user.getUid();
 				}
-				if (userScreenName != null) {
-					getProfileInfo();
-				}
+
 				Log.d("debug", jsonObject.toString());
 				Log.d("debug", "---------------------------------------------");				
 			}  
@@ -235,38 +201,5 @@ public class TimelineActivity extends FragmentActivity  implements ComposeTweetD
 		}); 
 	}
 
-	private void populateTimeline() {
-		client.getHomeTimeline(latest_tweet_id, new JsonHttpResponseHandler(){
-			@Override
-			public void onSuccess(JSONArray jsonArray) {
-				if (curr_page == 0) {
-					adTweets.clear();
-				}
-				ArrayList<Tweet> tweets = Tweet.fromJSONArray(jsonArray);
-				adTweets.addAll(tweets);
-				if (latest_tweet_id == 1) {
-					latest_tweet_id = tweets.get(0).getUid();
-				}
-				for (Tweet tweet : tweets) {
-					if (tweet.getUid() < latest_tweet_id   ) {
-						latest_tweet_id = tweet.getUid();
-					}
-				}
-				//adTweets.notifyDataSetChanged();
-				Log.d("debug", jsonArray.toString());
-				Log.d("debug", "---------------------------------------------");
-				lvTweets.onRefreshComplete();
-				lvTweets.setSelection(0);
-			}  
 
-			@Override
-			public void onFailure(Throwable e, String s) {
-				Log.d("debug", "Failure !!-----------------------------------");
-				Log.d("debug", e.toString());
-				Log.d("debug", s);
-				lvTweets.onRefreshComplete();
-				lvTweets.setSelection(0);
-			}  
-		});  
-	}
 }
