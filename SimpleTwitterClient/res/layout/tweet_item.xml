@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:layout_marginBottom="3dp"
     android:layout_marginLeft="3dp"
+    android:background="#ffffff"
     android:layout_marginTop="3dp"
     tools:ignore="UnusedAttribute,HardcodedText" >
 
@@ -75,9 +76,30 @@
         android:id="@+id/btTweetReply"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/tvTweetedSince"
+        android:layout_alignLeft="@+id/tvTweetBody"
         android:layout_below="@+id/tvTweetBody"
+        android:background="#ffffff"
         android:focusable="false"
-        android:src="@drawable/ic_action_refresh" />
+        android:src="@drawable/ic_action_tweet_reply" />
 
+    <ImageButton
+        android:id="@+id/btTweetRetweet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/btTweetReply"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/btTweetReply"
+        android:background="#ffffff"
+       />
+
+    <ImageButton
+        android:id="@+id/btTweetLike"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/btTweetReply"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/btTweetRetweet"
+        android:background="#ffffff"
+         />    
+    
 </RelativeLayout>

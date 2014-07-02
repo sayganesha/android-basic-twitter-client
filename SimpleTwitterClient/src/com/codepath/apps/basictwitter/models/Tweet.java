@@ -32,6 +32,34 @@ public class Tweet  extends Model {
 	@Column(name = "User", onUpdate = ForeignKeyAction.CASCADE, onDelete = ForeignKeyAction.CASCADE)
 	private User user;
 	
+	@Column(name = "Retweeted")
+	private boolean retweeted;
+
+	@Column(name = "RetweetCount")
+	private long retweetCount;
+	
+	@Column(name = "favorited")
+	private boolean favorited;
+	
+	@Column(name = "FavoriteCount")
+	private long favoriteCount;
+	
+	public String getRetweetCount() {
+		return "" + retweetCount;
+	}
+
+	public boolean isFavorited() {
+		return favorited;
+	}
+
+	public String getFavoriteCount() {
+		return "" + favoriteCount;
+	}
+
+	public boolean isRetweeted() {
+		return retweeted;
+	}
+
 	public String getRelativeTime() {
 		return getRelativeTimeAgo(createdAt);
 	}
@@ -108,11 +136,31 @@ public class Tweet  extends Model {
 	
 	public static Tweet fromJSON(JSONObject jsonObject)
 	{
-		Tweet tweet = new Tweet();
+		Tweet tweet = new Tweet();  
 		try {
 			tweet.body = jsonObject.getString("text");
 			tweet.uid = jsonObject.getLong("id");
 			tweet.createdAt = jsonObject.getString("created_at");
+			if (jsonObject.has("retweeted")) {
+				tweet.retweeted = jsonObject.getBoolean("retweeted");
+			} else {
+				tweet.retweeted = false;
+			}
+			if (jsonObject.has("retweet_count")) {
+				tweet.retweetCount = jsonObject.getLong("retweet_count");
+			} else {
+				tweet.retweetCount = 0;
+			}
+			if (jsonObject.has("favorited")) {
+				tweet.favorited = jsonObject.getBoolean("favorited");
+			} else {
+				tweet.favorited = false;
+			}
+			if (jsonObject.has("favorite_count")) {
+				tweet.favoriteCount = jsonObject.getLong("favorite_count");
+			} else {
+				tweet.favoriteCount = 0;
+			}
 			tweet.user = User.fromJSON(jsonObject.getJSONObject("user"));
 			tweet.user.save();
 			tweet.save();

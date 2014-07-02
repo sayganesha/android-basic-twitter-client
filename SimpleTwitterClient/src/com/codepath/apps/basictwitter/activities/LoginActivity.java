@@ -10,9 +10,9 @@ import android.view.View;
 import com.codepath.apps.basictwitter.R;
 import com.codepath.apps.basictwitter.TwitterClient;
 import com.codepath.oauth.OAuthLoginActivity;
-
+   
 public class LoginActivity extends OAuthLoginActivity<TwitterClient> {
-
+      
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

@@ -76,10 +76,6 @@ public class ComposeTweetDialog extends DialogFragment implements TextWatcher, O
 
 		View view = inflater.inflate(com.codepath.apps.basictwitter.R.layout.fragment_compose_tweet, container);
 
-		//String title = getArguments().getString("title", "Compose Tweet");
-		//getDialog().setTitle(title);
-
-
 		btCancelTweet = (ImageButton) view.findViewById(com.codepath.apps.basictwitter.R.id.btCancelTweet);
 		btCancelTweet.setOnClickListener(new OnClickListener() {
 
@@ -117,24 +113,20 @@ public class ComposeTweetDialog extends DialogFragment implements TextWatcher, O
 		tvComposeUserHandle.setText("@" + user.getScreenName());
 
 		tvComposeRemainingChars = (TextView) view.findViewById(com.codepath.apps.basictwitter.R.id.tvRemainingChars);
-		tvComposeRemainingChars.setText("" + MAX_CHARS);
-
-		/* Not showing any title
-		String title = getArguments().getString("title", "Enter Name");
-		getDialog().setTitle(title);*/
 
 		String replyToScreenName = getArguments().getString("replyTo");
 		etComposeTweet = (EditText) view.findViewById(com.codepath.apps.basictwitter.R.id.etComposeTweet);
 		if (replyToScreenName.length() > 0) {
-			etComposeTweet.setText("@" + replyToScreenName);
+			etComposeTweet.setText("@" + replyToScreenName + " ");
 		}
+		etComposeTweet.setSelection(etComposeTweet.getText().toString().length());
 		etComposeTweet.requestFocus();
 		etComposeTweet.addTextChangedListener(this);
 		
+		tvComposeRemainingChars.setText("" + (MAX_CHARS - etComposeTweet.getText().toString().length()));
+		
 		getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
-		//getDialog().getWindow().setSoftInputMode(
-		//		WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 		return view;
 	}
 

@@ -1,53 +1,91 @@
 package com.codepath.apps.basictwitter.fragments;
-
 import java.util.ArrayList;
 
+import org.json.JSONArray;
+
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
 import com.codepath.apps.basictwitter.R;
 import com.codepath.apps.basictwitter.TwitterClient;
 import com.codepath.apps.basictwitter.TwitterClientApp;
 import com.codepath.apps.basictwitter.adapters.EndlessScrollListener;
 import com.codepath.apps.basictwitter.adapters.TweetArrayAdapter;
+import com.codepath.apps.basictwitter.adapters.TweetArrayAdapter.OnTweetActivityListener;
 import com.codepath.apps.basictwitter.models.Tweet;
+import com.loopj.android.http.JsonHttpResponseHandler;
 
 import eu.erikw.PullToRefreshListView;
 import eu.erikw.PullToRefreshListView.OnRefreshListener;
 
-public abstract class TweetsListFragment extends Fragment implements OnItemClickListener {
+public abstract class TweetsListFragment extends Fragment implements OnTweetActivityListener {
 	protected TwitterClient client;
 	protected ArrayList<Tweet> tweets;
 	protected ArrayAdapter<Tweet> adTweets;
 	protected PullToRefreshListView lvTweets;
-	protected Long latest_tweet_id = 1L;
+	protected Long latest_tweet_id = 1L; 
 	protected int curr_page = 0;
 	protected final int MAX_PAGE = 8;
-
-	public interface OnTweetActivityListener {
-		public void onProfileSelected(long tweet_uid, String userScreenName);
-	}
-	
 	protected OnTweetActivityListener listener;
 	
 	@Override
-	public void onItemClick(AdapterView<?> arg0, View parent, int position, long arg3) {
-		// get the tweet on which the user clicked
-		Tweet tweet = adTweets.getItem(position);  
+	public void onProfileSelected(long userId) {
 		if (listener == null) {
 			// no listener is interested in the click
 			return;
 		}
-		listener.onProfileSelected(tweet.getUid(), tweet.getUser().getScreenName());
+		listener.onProfileSelected(userId);
 		
+	}
+	
+	@Override
+	public void onTweetReply(long tweet_uid, String userScreenName) {
+		if (listener == null) {
+			// no listener is interested in the click
+			return;
+		}
+		listener.onTweetReply(tweet_uid, userScreenName);		
+	}
+	
+	@Override
+	public void onTweetRetweet(long tweet_uid) {
+		client.postRetweet(tweet_uid, new JsonHttpResponseHandler(){
+			@Override
+			public void onSuccess(int arg0, JSONArray arg1) {
+				adTweets.notifyDataSetChanged();
+			}
+			
+			@Override
+			public void onFailure(Throwable arg0, String arg1) {
+				// TODO Auto-generated method stub
+				super.onFailure(arg0, arg1);
+			}
+			})	;
+	}
+	
+	@Override
+	public void onTweetFavourited(long tweet_uid) {
+		client.postTweetFavourite(tweet_uid, new JsonHttpResponseHandler(){
+			@Override
+			public void onSuccess(int arg0, JSONArray arg1) {
+				adTweets.notifyDataSetChanged();
+			}
+			
+			@Override
+			public void onFailure(Throwable arg0, String arg1) {
+				// TODO Auto-generated method stub
+				super.onFailure(arg0, arg1);
+			}
+			})	;
 	}
 	
 	
@@ -55,7 +93,7 @@ public abstract class TweetsListFragment extends Fragment implements OnItemClick
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		tweets = new ArrayList<Tweet>();
-		adTweets = new  TweetArrayAdapter(getActivity(), tweets);
+		adTweets = new  TweetArrayAdapter(getActivity(), tweets, this);
 		client = TwitterClientApp.getTwitterClient();
 	}
 
@@ -99,7 +137,7 @@ public abstract class TweetsListFragment extends Fragment implements OnItemClick
 			}
 		});
 		
-		lvTweets.setOnItemClickListener( new OnItemClickListener() {
+		/*lvTweets.setOnItemClickListener( new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View parent, int position, long arg3) {
 				// get the tweet on which the user clicked
@@ -111,7 +149,7 @@ public abstract class TweetsListFragment extends Fragment implements OnItemClick
 				listener.onProfileSelected(tweet.getUid(), tweet.getUser().getScreenName());
 				
 			}
-		});
+		});*/
 
 		// Return the view layout
 		return v;

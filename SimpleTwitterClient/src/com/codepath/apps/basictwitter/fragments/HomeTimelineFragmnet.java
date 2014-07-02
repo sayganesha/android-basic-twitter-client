@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 import org.json.JSONArray;
 
+import android.view.View;
+import android.widget.AdapterView;
+
 import com.activeandroid.util.Log;
 import com.codepath.apps.basictwitter.models.Tweet;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -47,4 +50,5 @@ public class HomeTimelineFragmnet extends TweetsListFragment {
 		});  
 	}
 
+	
 }

@@ -23,11 +23,11 @@ import com.activeandroid.util.Log;
 import com.codepath.apps.basictwitter.R;
 import com.codepath.apps.basictwitter.TwitterClient;
 import com.codepath.apps.basictwitter.TwitterClientApp;
+import com.codepath.apps.basictwitter.adapters.TweetArrayAdapter.OnTweetActivityListener;
 import com.codepath.apps.basictwitter.fragments.ComposeTweetDialog;
 import com.codepath.apps.basictwitter.fragments.ComposeTweetDialog.ComposeTweetDialogListener;
 import com.codepath.apps.basictwitter.fragments.HomeTimelineFragmnet;
 import com.codepath.apps.basictwitter.fragments.MentionsTimelineFragment;
-import com.codepath.apps.basictwitter.fragments.TweetsListFragment.OnTweetActivityListener;
 import com.codepath.apps.basictwitter.fragments.listeners.SupportFragmentTabListener;
 import com.codepath.apps.basictwitter.models.Tweet;
 import com.codepath.apps.basictwitter.models.User;
@@ -157,6 +157,7 @@ public class TimelineActivity extends ActionBarActivity  implements ComposeTweet
 	private void launchUserProfile() {
 		Intent i = new Intent(this, ProfileActivity.class);
 		i.putExtra("user_id", user_id);
+		i.putExtra("orig_user", user);
 		startActivity(i);
 	}
 	
@@ -201,5 +202,27 @@ public class TimelineActivity extends ActionBarActivity  implements ComposeTweet
 		}); 
 	}
 
+	@Override
+	public void onTweetReply(long tweet_uid, String userScreenName) {
+		showComposeTweetDialog(tweet_uid, userScreenName);
+	}
+
+	@Override
+	public void onProfileSelected(long userId) {
+		Intent i = new Intent(this, ProfileActivity.class);
+		i.putExtra("user_id", "" +  userId);
+		i.putExtra("orig_user", user);
+	    startActivity(i);		
+	}
+
+	@Override
+	public void onTweetRetweet(long tweet_uid) {
+		// do nothing
+	}
+
+	@Override
+	public void onTweetFavourited(long tweet_uid) {
+		// do nothing
+	}
 
 }
