@@ -13,6 +13,16 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 
 public class HomeTimelineFragmnet extends TweetsListFragment {
 	
+	// newInstance constructor for creating fragment with arguments
+		public static HomeTimelineFragmnet newInstance(int page, String title) {
+			HomeTimelineFragmnet HomeTimelineFragmnet = new HomeTimelineFragmnet();
+			/*Bundle args = new Bundle();
+			args.putInt("someInt", page);
+			args.putString("someTitle", title);
+			fragmentFirst.setArguments(args);*/
+			return HomeTimelineFragmnet;
+		}
+	
 	
 	protected void populateTimeline() {
 		client.getHomeTimeline(latest_tweet_id, new JsonHttpResponseHandler(){

@@ -1,6 +1,7 @@
 package com.codepath.apps.basictwitter.activities;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import org.json.JSONArray;
@@ -11,7 +12,9 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -23,6 +26,7 @@ import com.activeandroid.util.Log;
 import com.codepath.apps.basictwitter.R;
 import com.codepath.apps.basictwitter.TwitterClient;
 import com.codepath.apps.basictwitter.TwitterClientApp;
+import com.codepath.apps.basictwitter.adapters.SmartFragmentStatePagerAdapter;
 import com.codepath.apps.basictwitter.adapters.TweetArrayAdapter.OnTweetActivityListener;
 import com.codepath.apps.basictwitter.fragments.ComposeTweetDialog;
 import com.codepath.apps.basictwitter.fragments.ComposeTweetDialog.ComposeTweetDialogListener;
@@ -39,23 +43,70 @@ public class TimelineActivity extends ActionBarActivity  implements ComposeTweet
 	// The logged in user
 	private User user;
 
-
+	private SmartFragmentStatePagerAdapter adapterViewPager;
+	
+	  // Extend from SmartFragmentStatePagerAdapter now instead for more dynamic ViewPager items
+    public static class MyPagerAdapter extends SmartFragmentStatePagerAdapter {
+	private static int NUM_ITEMS = 2;
+	ArrayList<String> page_names;
+		
+        public MyPagerAdapter(FragmentManager fragmentManager) {
+            super(fragmentManager);
+            page_names = new ArrayList<String>();
+            page_names.add("Home");
+            page_names.add("Mentions");
+        }
+        
+        // Returns total number of pages
+        @Override
+        public int getCount() {
+            return NUM_ITEMS;
+        }
+ 
+        // Returns the fragment to display for that page
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+            case 0: // Fragment # 0 - This will show FirstFragment
+            	return HomeTimelineFragmnet.newInstance(0, "Home");
+            case 1: // Fragment # 0 - This will show FirstFragment different title
+            	return HomeTimelineFragmnet.newInstance(0, "Mentions");
+            	
+            default:
+            	return null;
+            }
+        }
+        
+        // Returns the page title for the top indicator
+        @Override
+        public CharSequence getPageTitle(int position) {
+        	return page_names.get(position);
+        }
+        
+    }
+	
+	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_timeline);
-
-
 		client = TwitterClientApp.getTwitterClient();
-
-
-
 		getUserName();
-		setupTabs();
-
-		//populateTimeline();
+		//setupTabs();
+		
+		ActionBar actionBar = getSupportActionBar();
+		actionBar.setBackgroundDrawable(new 
+				ColorDrawable(Color.parseColor("#5cb3ff")));  
+		actionBar.setTitle("Twitter");
+		
+		ViewPager vpPager = (ViewPager) findViewById(R.id.vpPager);
+		adapterViewPager = new MyPagerAdapter(getSupportFragmentManager());
+		vpPager.setAdapter(adapterViewPager);
+		
 	}      
 
+	// Previous Version of the Code used the 
 	private void setupTabs() {
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -135,7 +186,6 @@ public class TimelineActivity extends ActionBarActivity  implements ComposeTweet
 
 			} 
 		});
-		//populateTimeline();*/
 	}  
 
 

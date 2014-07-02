@@ -10,6 +10,15 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 
 public class MentionsTimelineFragment extends TweetsListFragment {
       
+	public static MentionsTimelineFragment newInstance(int page, String title) {
+		MentionsTimelineFragment mentionsTimelineFragment = new MentionsTimelineFragment();
+		/*Bundle args = new Bundle();
+		args.putInt("someInt", page);
+		args.putString("someTitle", title);
+		fragmentFirst.setArguments(args);*/
+		return mentionsTimelineFragment;
+	}
+	
 	@Override
 	protected void populateTimeline() {
 		client.getMentionsTimeline(latest_tweet_id, new JsonHttpResponseHandler(){
