@@ -67,10 +67,10 @@ public class TimelineActivity extends ActionBarActivity  implements ComposeTweet
         @Override
         public Fragment getItem(int position) {
             switch (position) {
-            case 0: // Fragment # 0 - This will show FirstFragment
+            case 0: 
             	return HomeTimelineFragmnet.newInstance(0, "Home");
-            case 1: // Fragment # 0 - This will show FirstFragment different title
-            	return HomeTimelineFragmnet.newInstance(0, "Mentions");
+            case 1: 
+            	return MentionsTimelineFragment.newInstance(1, "Mentions");
             	
             default:
             	return null;
@@ -167,6 +167,7 @@ public class TimelineActivity extends ActionBarActivity  implements ComposeTweet
 			userJson.put("profile_image_url", user.getProfileImageUrl());
 			userJson.put("followers_count", user.getFollowersCount());
 			userJson.put("friends_count", user.getFollowingCount());
+			userJson.put("statuses_count", user.getStatusesCount());
 			userJson.put("description", user.getTagLine());
 			tweetObj.put("user", userJson);
 			t = Tweet.fromJSON(tweetObj);

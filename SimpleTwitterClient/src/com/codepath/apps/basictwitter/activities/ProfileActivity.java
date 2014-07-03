@@ -92,12 +92,14 @@ public class ProfileActivity extends FragmentActivity implements ComposeTweetDia
 		TextView tvtagLine = (TextView) findViewById(R.id.tvTag);
 		TextView tvFollowers = (TextView) findViewById(R.id.tvFollowers);
 		TextView tvFollowing = (TextView) findViewById(R.id.tvFollowing);
+		TextView tvNumTweets = (TextView) findViewById(R.id.tvNumTweets);
 		ImageView ivProfileImage = (ImageView) findViewById(R.id.ivDetailProfileImage);
 		
 		tvName.setText(u.getName());
 		tvtagLine.setText(u.getTagLine());
 		tvFollowers.setText("" + u.getFollowersCount());
 		tvFollowing.setText("" + u.getFollowingCount());
+		tvNumTweets.setText("" + u.getStatusesCount());
 		
 		ImageLoader.getInstance().displayImage(u.getProfileImageUrl(), ivProfileImage);
 	}
@@ -146,6 +148,7 @@ public class ProfileActivity extends FragmentActivity implements ComposeTweetDia
 			userJson.put("followers_count", user.getFollowersCount());
 			userJson.put("friends_count", user.getFollowingCount());
 			userJson.put("description", user.getTagLine());
+			userJson.put("statuses_count", user.getStatusesCount());
 			tweetObj.put("user", userJson);
 			t = Tweet.fromJSON(tweetObj);
 		} catch (JSONException e) {

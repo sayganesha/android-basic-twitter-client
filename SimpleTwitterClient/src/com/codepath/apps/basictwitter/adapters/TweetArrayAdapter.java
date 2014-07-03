@@ -111,10 +111,10 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> implements OnClickLis
 			onTweetReply(view);
 			break;
 		case R.id.btTweetRetweet:
-			onTweetRetweet(view);
+			onTweetRetweet((ImageButton)view);
 			break;
 		case R.id.btTweetLike:
-			onTweetFavourited(view);
+			onTweetFavourited((ImageButton)view);
 			break;		
 		default:
 			break;
@@ -135,17 +135,27 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> implements OnClickLis
 		}
 	}
 
-	public void onTweetRetweet(View view) {
+	public void onTweetRetweet(ImageButton view) {
+		Tweet tweet = (Tweet) view.getTag();
 		if (listener != null) {
-			Tweet tweet = (Tweet) view.getTag();
 			listener.onTweetRetweet(tweet.getUid());
+		}
+		if (!tweet.isRetweeted()) {
+			view.setBackgroundResource(R.drawable.ic_action_retweeted);
+		} else {
+			view.setBackgroundResource(R.drawable.ic_action_tweet_retweet);
 		}
 	}
 	
-	public void onTweetFavourited(View view) {
+	public void onTweetFavourited(ImageButton view) {
+		Tweet tweet = (Tweet) view.getTag();
 		if (listener != null) {
-			Tweet tweet = (Tweet) view.getTag();
 			listener.onTweetFavourited(tweet.getUid());
 		}
+		if (!tweet.isFavorited()) {  
+			view.setBackgroundResource(R.drawable.ic_action_favorited);
+		} else {
+			view.setBackgroundResource(R.drawable.ic_action_tweet_like);
+		} 
 	}
 }

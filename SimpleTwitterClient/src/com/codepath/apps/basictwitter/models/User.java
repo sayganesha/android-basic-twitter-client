@@ -31,6 +31,10 @@ public class User extends Model implements Serializable {
 	@Column(name = "FollowersCount", unique = false)
 	private long followersCount;
 	
+	public long getStatusesCount() {
+		return statusesCount;
+	}
+
 	@Column(name = "Status", unique = false)
 	private String tagLine;
 	
@@ -44,6 +48,10 @@ public class User extends Model implements Serializable {
 
 	@Column(name = "FollowingCount", unique = false)
 	private long followingCount;
+	
+	@Column(name = "StatusCount", unique = false)
+	private long statusesCount;
+	
 	
 	public String getName() {
 		return name;
@@ -71,6 +79,7 @@ public class User extends Model implements Serializable {
 			user.followersCount = jsonObject.getLong("followers_count");
 			user.followingCount = jsonObject.getLong("friends_count");
 			user.tagLine = jsonObject.getString("description");
+			user.statusesCount = jsonObject.getLong("statuses_count");
 		} catch (JSONException e) {
 			e.printStackTrace();
 			return null;

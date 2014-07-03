@@ -6,13 +6,25 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="#5cb3ff"
     tools:context=".LoginActivity" >
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="132dp"
+        android:src="@drawable/ic_launcher_twitter" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/imageView1"
         android:layout_margin="20dp"
+        android:layout_marginTop="32dp"
+        android:background="#ffffff"
         android:onClick="loginToRest"
         android:text="@string/login_label" />
 

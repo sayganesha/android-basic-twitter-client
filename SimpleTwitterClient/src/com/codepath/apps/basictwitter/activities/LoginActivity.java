@@ -19,6 +19,7 @@ public class LoginActivity extends OAuthLoginActivity<TwitterClient> {
 		setContentView(R.layout.activity_login);
 		getActionBar().setBackgroundDrawable(new 
 				ColorDrawable(Color.parseColor("#5cb3ff")));
+		getActionBar().hide();
 	}
 
 	// Inflate the menu; this adds items to the action bar if it is present.
