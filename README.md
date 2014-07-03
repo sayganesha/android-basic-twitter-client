@@ -3,6 +3,25 @@ android-basic-twitter-client
 
 Basic Twitter client
 
+Updated Stories:
+- User login screen is branded
+- There are two fragments - Home and Mentions
+- Both show the timelines for respective headings
+- User can infinitely scroll
+- User data and tweets is persisted in  tables
+- User can reply on any tweet - the handle is filled in properly, remaining chars work fine.
+- User can compose tweet as usual.
+- User can retweet
+- User can favourite a tweet
+- User can click on the image on any tweet and that users profile is loaded
+- User can click on action bar to get his own profile
+- In any user profile, one can see profile image, tag line, number of tweets, number of followers, number of followings
+
+Implemented following advanced stories:
+- Can reply to any tweet
+- Can favorite, retweet any tweet
+- Used pager (previous commits had ActionBar tabs too)
+
 
 Provides the following Stories:
 
@@ -25,6 +44,6 @@ Completed following optional stories
 
 Missed - ActiveAndroid - couldnt get a stable app, but will continue to push once it is done.
 
-![Video Walkthrough](demo_twitter_client.gif)
+![Video Walkthrough](demo_new_twitter_client.gif)
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
